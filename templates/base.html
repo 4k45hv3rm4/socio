@@ -1,0 +1,113 @@
+<!doctype html>
+{% load hitcount_tags %}
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <title>{%block title %}
+        Home
+        {% endblock %}
+    </title>
+  </head>
+  <body> 
+    
+      <div>
+        <ul style="list-style-type: none;margin:0;padding:0;width:100%;height:100px;background-color:#dddddd;">
+
+            <li style="display: inline;overflow:hidden;float: left;list-style-type: none;"><a style="display: block;padding: 10px;background-color: #dddddd;text-decoration:none;" href="{% url 'home' %}">Home</a></li>
+            {% if not user.is_authenticated %}
+                <li style="display: inline;float: left;"> <a style="display: block;padding: 10px;background-color: #dddddd;text-decoration:none;" href="{% url 'login' %}">LOGIN</a></li>
+                <li style="display: inline;float: left;"><a style="display: block;padding: 10px;background-color: #dddddd;text-decoration:none;" href="{% url 'signup' %}">SIGN UP</a></li>
+            {% else %}
+                <li style="display: inline;float: left;"><a style="display: block;padding: 10px;background-color: #dddddd;text-decoration:none;" href="{% url 'logout' %}">LOGOUT</a></li>
+                <li style="display: inline;float: left;padding:10px;padding-left:100px">
+                <form id='search' method='get' style="width:500px" action='{% url 'search' %}'>
+                  {% csrf_token %}
+                  <!-- <input type='text' required class='form-control' id='txtSearch' name='txtSearch'>
+                  <button type='submit' class='btn btn-primary btn-submit mt-1 pt-2'>Submit</button> -->
+                  <!-- {{form.as_p}} -->
+                  <a href="{% url 'search' %}">Search users </a>
+                </form>
+                </li>
+              {% endif %}
+        </ul>
+        <div class="messages pt-2 mt-2 mb-2">
+          {% for message in messages %}
+          <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
+          </div>
+          {% endfor %}
+        </div>
+    <div class="container-fluid row pt-4 ">
+              
+
+      <div class="col-lg-2 bg-light">
+        {% if  user.is_authenticated %}
+        <ul style="list-style-type: none;margin:0;padding:0;width:100%;height:50px;background-color:#dddddd;">
+
+          <li > <a style="display: block;padding: 10px;background-color: #dddddd;text-decoration:none;" href="{% url 'profile' request.user.phone %}">Profile</a></li>
+          <li ><a style="display: block;padding: 10px;background-color: #dddddd;text-decoration:none;" href="{% url 'create_post' %}">Create Post</a></li>
+        </ul>  
+        {% endif %}
+      </div>
+      <div class="col-lg-8 ">  
+        {% block content %}
+          <h1 >welcome to Home</h1>
+          {% if obj %}
+
+
+            {% for post in obj %}
+                <div class="col-lg-8 offset-lg-1 content m-auto text-justify pt-4">
+                    <div>
+
+                        {%if post.image %}
+                            <img src="{{ post.image.url }}" style="width:650px;height:350px;" class=" img-fluid"/>
+                        {% endif %}
+
+                    </div>
+                    <h2><a  href="{{post.get_absolute_url}}">{{post.title }}</a></h2>
+
+                  
+
+                  
+
+                      <span style="color:red;"><a href="{% url "profile" post.author.phone%}">{{post.author.name|title}}</a></span>  on <span style="color:teal">{{post.created_at}}</span>
+                    <p class="text-justify postcontent m-auto">{{post.content | safe| truncatechars:200 | linebreaks}}</p>
+                    <p>Views: {% get_hit_count for post %}</p>
+                    <hr>
+                </div>
+            {% endfor %}
+            {% else %}
+            <p>No posts Containing <h4>"{{query}}"</h4></p>
+            {% endif %}
+
+
+        </div>
+        {% endblock %}
+      </div>
+      <div class="col-lg-2 bg-light">
+
+      </div>
+    </div>
+    </div>    
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" /> <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"> </script> <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
+    <!-- Option 2: jQuery, Popper.js, and Bootstrap JS
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+    -->
+  </body>
+</html>
